@@ -1,0 +1,9 @@
+commands:
+  supply_drop:
+    min: 1
+    max: 4
+  gg_drop:
+    min: 1
+    max: 4
+
+time-per-supply-drop: 30 minutes

@@ -1,0 +1,4 @@
+name: SupplyDropPlugin
+version: '${version}'
+main: dev.imlukas.supplydropplugin.SupplyDropPlugin
+api-version: '1.20'
