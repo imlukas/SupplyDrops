@@ -12,9 +12,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 @Setter
 public class PluginSettings extends YMLBase{
 
+    private double dropVelocity;
+    private String defaultDropId;
     private long timePerDrop;
-    private IntegerRange supplyDropCommandRange;
-    private IntegerRange ggDropCommandQuantityRange;
 
     private final FileConfiguration config;
 
@@ -25,15 +25,9 @@ public class PluginSettings extends YMLBase{
     }
 
     public void load() {
-        timePerDrop = Time.fromString(config.getString("time-per-supply-drop")).asTicks();
-
-        int supplyDropMin = config.getInt("ranges.supply-drop.min");
-        int supplyDropMax = config.getInt("ranges.supply-drop.max");
-        supplyDropCommandRange = Range.ofInteger(supplyDropMin, supplyDropMax);
-
-        int ggDropMin = config.getInt("ranges.gg-drop.min");
-        int ggDropMax = config.getInt("ranges.gg-drop.max");
-        ggDropCommandQuantityRange = Range.ofInteger(ggDropMin, ggDropMax);
+        dropVelocity = config.getDouble("drop-velocity-multiplier", -1.0d);
+        defaultDropId = config.getString("default-drop", "supply-drop");
+        timePerDrop = Time.fromString(config.getString("time-per-supply-drop", "30 minutes")).asTicks();
     }
 
     public void reload() {

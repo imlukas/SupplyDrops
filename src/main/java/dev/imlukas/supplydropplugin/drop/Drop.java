@@ -1,6 +1,6 @@
 package dev.imlukas.supplydropplugin.drop;
 
-import dev.imlukas.supplydropplugin.location.SafeLocation;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -9,11 +9,9 @@ public interface Drop {
 
     UUID getEntityId();
 
-    UUID getId();
+    UUID getUUID();
 
-    SafeLocation getLocation();
-
-    void drop();
+    boolean drop();
 
     void destroy();
 

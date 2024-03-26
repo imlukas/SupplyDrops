@@ -1,10 +1,14 @@
 package dev.imlukas.supplydropplugin;
 
-import dev.imlukas.supplydropplugin.cache.DropCache;
-import dev.imlukas.supplydropplugin.commands.ForceDropCommand;
+import dev.imlukas.supplydropplugin.drop.cache.DropCache;
+import dev.imlukas.supplydropplugin.commands.SupplyDropCommand;
+import dev.imlukas.supplydropplugin.drop.Drop;
 import dev.imlukas.supplydropplugin.drop.commands.config.CommandConfigHandler;
 import dev.imlukas.supplydropplugin.drop.commands.registry.DropCommandRegistry;
 import dev.imlukas.supplydropplugin.drop.configuration.DropSupplier;
+import dev.imlukas.supplydropplugin.drop.locations.config.LocationConfigHandler;
+import dev.imlukas.supplydropplugin.drop.locations.registry.DropLocationRegistry;
+import dev.imlukas.supplydropplugin.drop.task.drop.DropTask;
 import dev.imlukas.supplydropplugin.listener.SupplyDropInteractListener;
 import dev.imlukas.supplydropplugin.util.core.bukkit.BukkitCommandManager;
 import dev.imlukas.supplydropplugin.util.file.PluginSettings;
@@ -16,6 +20,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 @Getter
 public final class SupplyDropPlugin extends JavaPlugin {
 
@@ -25,7 +32,9 @@ public final class SupplyDropPlugin extends JavaPlugin {
     private BukkitCommandManager commandManager;
 
     private DropCommandRegistry commandRegistry;
+    private DropLocationRegistry locationRegistry;
     private DropCache dropCache;
+    private Queue<Drop> dropQueue;
     private DropSupplier dropSupplier;
 
     @Override
@@ -40,12 +49,18 @@ public final class SupplyDropPlugin extends JavaPlugin {
 
         this.commandRegistry = new DropCommandRegistry();
         new CommandConfigHandler(this).load();
+
+        this.locationRegistry = new DropLocationRegistry();
+        new LocationConfigHandler(this).load();
         this.dropCache = new DropCache();
+        this.dropQueue = new LinkedList<>();
         this.dropSupplier = new DropSupplier(this);
 
-        new ForceDropCommand(this);
+        new SupplyDropCommand(this);
 
         registerListener(new SupplyDropInteractListener(this));
+
+        new DropTask(this);
     }
 
     @Override

@@ -1,11 +1,3 @@
-commands:
-  supply_drop:
-    min: 1
-    max: 4
-  gg_drop:
-    min: 1
-    max: 4
-
 ranges:
   supply-drop:
     min: 1
@@ -13,5 +5,8 @@ ranges:
   gg-drop:
     min: 1
     max: 5
+
+drop-velocity-multiplier: -0.2 # Tweak this to liking
+default-drop: "supply-drop"
 
 time-per-supply-drop: 30 minutes

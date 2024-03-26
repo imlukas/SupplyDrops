@@ -9,7 +9,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import java.util.UUID;
 
 @Getter
-public class SafeLocation {
+public class DropLocation {
 
     private final UUID worldId;
     private final double x;
@@ -18,7 +18,9 @@ public class SafeLocation {
     private final float yaw;
     private final float pitch;
 
-    public SafeLocation(Location location) {
+    private boolean isOccupied = false;
+
+    public DropLocation(Location location) {
         this.worldId = location.getWorld().getUID();
         this.x = location.getBlockX();
         this.y = location.getBlockY();
@@ -27,16 +29,20 @@ public class SafeLocation {
         this.pitch = location.getPitch();
     }
 
+    public void setOccupied(boolean occupied) {
+        isOccupied = occupied;
+    }
+
     public World getWorld() {
         return Bukkit.getWorld(worldId);
     }
 
 
-    public static SafeLocation fromLocation(Location location) {
-        return new SafeLocation(location);
+    public static DropLocation fromLocation(Location location) {
+        return new DropLocation(location);
     }
 
-    public static SafeLocation fromSection(ConfigurationSection locationSection) {
+    public static DropLocation fromSection(ConfigurationSection locationSection) {
         if (locationSection == null) {
             return null;
         }
@@ -51,7 +57,7 @@ public class SafeLocation {
         return fromLocation(new Location(world, x, y, z, yaw, pitch));
     }
 
-    public static SafeLocation fromString(String location) {
+    public static DropLocation fromString(String location) {
         if (location == null) {
             return null;
         }
@@ -68,7 +74,7 @@ public class SafeLocation {
     }
 
 
-    public boolean equals(SafeLocation location) {
+    public boolean equals(DropLocation location) {
         return location.getWorldId().equals(getWorldId())
                 && location.getX() == getX()
                 && location.getY() == getY()

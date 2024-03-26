@@ -1,4 +1,4 @@
-package dev.imlukas.supplydropplugin.cache;
+package dev.imlukas.supplydropplugin.drop.cache;
 
 import dev.imlukas.supplydropplugin.drop.Drop;
 
@@ -14,7 +14,7 @@ public class DropCache {
     private final Map<UUID, Drop> drops = new HashMap<>();
 
     public void add(Drop supplyDrop) {
-        drops.put(supplyDrop.getId(), supplyDrop);
+        drops.put(supplyDrop.getUUID(), supplyDrop);
     }
 
     public void remove(UUID uuid) {

@@ -1,19 +1,22 @@
-locations:
-  location-1:
-    x: 0
-    y: 150 # starting height
-    z: 0
-    world: world
-  location-2:
-    x: 2
-    y: 150 # starting height
-    z: 2
-    world: world
 
-
-
-commands:
-  supply_drop:
+supply-drop:
+  stand-name: "<light_purple>Supply Drop"
+  model: airdrop
+  command-range:
+    min: 1
+    max: 5
+  locations:
+    location-1:
+      x: 0
+      y: 150 # starting height
+      z: 0
+      world: world
+    location-2:
+      x: 2
+      y: 150 # starting height
+      z: 2
+      world: world
+  commands:
     1:
       command: "give %player% diamond 1"
       chance: 0.5
@@ -21,10 +24,28 @@ commands:
       command: "give %player% diamond 2"
       chance: 0.3
 
-  gg_drop:
+gg-drop:
+  model: gg_airdrop
+  command-range:
+    min: 1
+    max: 5
+  locations:
+    location-1:
+      x: 0
+      y: 150 # starting height
+      z: 0
+      world: world
+    location-2:
+      x: 2
+      y: 150 # starting height
+      z: 2
+      world: world
+  commands:
     1:
       command: "give %player% diamond 1"
       chance: 0.5
     2:
       command: "give %player% diamond 2"
       chance: 0.3
+
+

@@ -3,3 +3,5 @@ messages:
     invalid: "<red>Invalid command arguments."
     no-permission: "<red>You do not have permission to use this command."
     incorrect-audience: "<red>You cannot run this command."
+  drop:
+    collected: "<green>You have collected a drop!"
