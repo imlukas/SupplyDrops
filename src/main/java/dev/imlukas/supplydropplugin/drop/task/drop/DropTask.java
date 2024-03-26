@@ -2,23 +2,40 @@ package dev.imlukas.supplydropplugin.drop.task.drop;
 
 import dev.imlukas.supplydropplugin.SupplyDropPlugin;
 import dev.imlukas.supplydropplugin.cache.DropCache;
+import dev.imlukas.supplydropplugin.drop.Drop;
 import dev.imlukas.supplydropplugin.drop.configuration.DropSupplier;
-import org.bukkit.scheduler.BukkitRunnable;
+import dev.imlukas.supplydropplugin.util.file.PluginSettings;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 
-public class DropTask extends BukkitRunnable {
+public class DropTask implements Runnable {
 
-    private final SupplyDropPlugin plugin;
     private final DropCache cache;
     private final DropSupplier dropSupplier;
 
     public DropTask(SupplyDropPlugin plugin) {
-        this.plugin = plugin;
         this.dropSupplier = plugin.getDropSupplier();
         this.cache = plugin.getDropCache();
+
+        PluginSettings settings = plugin.getSettings();
+        Bukkit.getScheduler().runTaskTimer(plugin, this, 0, settings.getTimePerDrop());
     }
 
     @Override
     public void run() {
-        // TODO: Implement drop task
+        Drop drop = dropSupplier.supplyDrop();
+
+        Location location = drop.getLocation().asBukkitLocation();
+
+        for (Drop cacheDrop : cache.getCached().values()) { // Check if the drop is too close to another drop
+            Location cacheLocation = cacheDrop.getLocation().asBukkitLocation();
+
+            if (location.distance(cacheLocation) < 10) {
+                return;
+            }
+        }
+
+        drop.drop();
+        cache.add(drop);
     }
 }

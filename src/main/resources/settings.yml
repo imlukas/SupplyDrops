@@ -6,4 +6,12 @@ commands:
     min: 1
     max: 4
 
+ranges:
+  supply-drop:
+    min: 1
+    max: 5
+  gg-drop:
+    min: 1
+    max: 5
+
 time-per-supply-drop: 30 minutes

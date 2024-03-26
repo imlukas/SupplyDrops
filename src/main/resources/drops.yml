@@ -1,14 +1,16 @@
 locations:
   location-1:
     x: 0
-    y: 220 # starting height
+    y: 150 # starting height
     z: 0
     world: world
   location-2:
     x: 2
-    y: 220 # starting height
+    y: 150 # starting height
     z: 2
     world: world
+
+
 
 commands:
   supply_drop:

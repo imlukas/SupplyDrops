@@ -1,24 +1,43 @@
 package dev.imlukas.supplydropplugin.cache;
 
-import dev.imlukas.supplydropplugin.drop.impl.SupplyDrop;
+import dev.imlukas.supplydropplugin.drop.Drop;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * Stores {@link Drop} objects until they're interacted with
+ */
 public class DropCache {
 
-    private final Map<UUID, SupplyDrop> supplyDrops = new HashMap<>();
+    private final Map<UUID, Drop> drops = new HashMap<>();
 
-    public void add(UUID uuid, SupplyDrop supplyDrop) {
-        supplyDrops.put(uuid, supplyDrop);
+    public void add(Drop supplyDrop) {
+        drops.put(supplyDrop.getId(), supplyDrop);
     }
 
     public void remove(UUID uuid) {
-        supplyDrops.remove(uuid);
+        drops.remove(uuid);
     }
 
-    public SupplyDrop get(UUID uuid) {
-        return supplyDrops.get(uuid);
+    public Map<UUID, Drop> getCached() {
+        return drops;
+    }
+
+    public Drop getById(UUID uuid) {
+        return drops.get(uuid);
+    }
+
+    public Drop getByEntityId(UUID entityId) {
+        for (Drop value : drops.values()) {
+            if (!value.getEntityId().equals(entityId)) {
+                continue;
+            }
+
+            return value;
+        }
+
+        return null;
     }
 }

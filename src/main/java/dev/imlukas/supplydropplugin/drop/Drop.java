@@ -7,6 +7,8 @@ import java.util.UUID;
 
 public interface Drop {
 
+    UUID getEntityId();
+
     UUID getId();
 
     SafeLocation getLocation();

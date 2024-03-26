@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 public class CommandAction {
 
-    private final Pattern pattern = Pattern.compile("\\[(.*)]");
+    private static final Pattern PATTERN = Pattern.compile("\\[(.*)]");
     private final List<String> commands = new ArrayList<>();
 
     public CommandAction(List<String> commands) {
@@ -26,12 +26,17 @@ public class CommandAction {
         return new CommandAction(section.getStringList("commands"));
     }
 
+    public List<String> getCommands() {
+        return commands;
+    }
+
     public void execute(Player player) {
+        System.out.println("Executing commands for " + player.getName());
         for (String command : commands) {
-            Matcher matcher = pattern.matcher(command);
+            Matcher matcher = PATTERN.matcher(command);
 
             if (!matcher.find()) {
-                player.performCommand(command);
+                player.performCommand(command.replace("%player%", player.getName()));
                 return;
             }
 

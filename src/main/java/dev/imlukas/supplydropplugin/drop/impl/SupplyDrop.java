@@ -6,6 +6,7 @@ import com.ticxo.modelengine.api.model.ModeledEntity;
 import dev.imlukas.supplydropplugin.drop.Drop;
 import dev.imlukas.supplydropplugin.drop.commands.CommandAction;
 import dev.imlukas.supplydropplugin.location.SafeLocation;
+import dev.imlukas.supplydropplugin.util.text.TextUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -13,6 +14,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 import java.util.UUID;
 
@@ -68,6 +70,13 @@ public class SupplyDrop implements Drop {
         World world = dropLocation.getWorld();
 
         ArmorStand stand = world.spawn(dropLocation, ArmorStand.class);
+        stand.customName(TextUtils.color("<light_purple>Supply Drop"));
+        stand.setCustomNameVisible(true);
+
+        Vector slowdownVector = new Vector(0, -0.1, 0);
+
+        stand.setVelocity(slowdownVector);
+
         ModeledEntity modeledEntity = ModelEngineAPI.createModeledEntity(stand);
 
         ActiveModel model = ModelEngineAPI.createActiveModel("airdrop");

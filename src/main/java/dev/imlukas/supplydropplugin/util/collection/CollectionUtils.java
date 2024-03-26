@@ -3,9 +3,9 @@ package dev.imlukas.supplydropplugin.util.collection;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-public final class ListUtils {
+public final class CollectionUtils {
 
-    private ListUtils() {
+    private CollectionUtils() {
         throw new IllegalStateException("Utility class");
     }
 
@@ -67,13 +67,13 @@ public final class ListUtils {
         return list;
     }
 
-    public static <ListType> void insertInList(List<ListType> list, int index, ListType value) {
+    public static <T> void insertInList(List<T> list, int index, T value) {
         if (index >= list.size()) {
             list.add(value);
             return;
         }
 
-        List<ListType> newList = new ArrayList<>();
+        List<T> newList = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
             if (i == index) {
                 newList.add(value);

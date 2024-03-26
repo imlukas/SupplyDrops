@@ -1,5 +1,6 @@
 package dev.imlukas.supplydropplugin.location;
 
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -7,6 +8,7 @@ import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.UUID;
 
+@Getter
 public class SafeLocation {
 
     private final UUID worldId;
@@ -39,7 +41,7 @@ public class SafeLocation {
             return null;
         }
 
-        World world = Bukkit.getWorld(UUID.fromString(locationSection.getString("world", "world")));
+        World world = Bukkit.getWorld(locationSection.getString("world", "world"));
         double x = locationSection.getDouble("x");
         double y = locationSection.getDouble("y");
         double z = locationSection.getDouble("z");
@@ -63,6 +65,14 @@ public class SafeLocation {
         }
 
         return fromLocation(new Location(world, Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]), Float.parseFloat(split[4]), Float.parseFloat(split[5])));
+    }
+
+
+    public boolean equals(SafeLocation location) {
+        return location.getWorldId().equals(getWorldId())
+                && location.getX() == getX()
+                && location.getY() == getY()
+                && location.getZ() == getZ();
     }
 
     public Location asBukkitLocation() {

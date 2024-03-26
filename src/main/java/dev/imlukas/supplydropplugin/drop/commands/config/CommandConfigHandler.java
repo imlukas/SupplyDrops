@@ -12,31 +12,34 @@ public class CommandConfigHandler extends YMLBase {
 
     public CommandConfigHandler(SupplyDropPlugin plugin) {
         super(plugin, "drops.yml");
-
         this.commandRegistry = plugin.getCommandRegistry();
-
-        load();
     }
 
     public void load() {
+        System.out.println("Loading commands");
         ConfigurationSection commands = getConfiguration().getConfigurationSection("commands");
 
-        ConfigurationSection supplyDropCommands = commands.getConfigurationSection("supply-drop");
-        if (supplyDropCommands != null) {
-            loadCommands(supplyDropCommands, CommandType.SUPPLY_DROP);
-        }
+        for (String commandType : commands.getKeys(false)) {
+            CommandType type = CommandType.valueOf(commandType.toUpperCase());
+            ConfigurationSection commandSection = commands.getConfigurationSection(commandType);
 
-        ConfigurationSection ggDropCommands = commands.getConfigurationSection("gg-drop");
-        if (ggDropCommands != null) {
-            loadCommands(ggDropCommands, CommandType.GG_DROP);
+            if (commandSection == null) {
+                System.out.println("Invalid command section for " + type);
+                continue;
+            }
+
+            System.out.println("Loading commands for " + type);
+            loadCommands(commandSection, type);
         }
     }
 
     public void loadCommands(ConfigurationSection section, CommandType type) {
         for (String key : section.getKeys(false)) {
-            double chance = section.getDouble(key);
 
-            commandRegistry.registerCommand(type, new ParsedCommand(key, chance));
+            String command = section.getString(key + ".command");
+            double chance = section.getDouble(key + ".chance");
+
+            commandRegistry.registerCommand(type, new ParsedCommand(command, chance));
         }
     }
 }
