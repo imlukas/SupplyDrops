@@ -40,7 +40,7 @@ public class ConfigurableDrop implements Drop {
     private UUID entityId;
     private Runnable onCollect;
 
-    public ConfigurableDrop(SupplyDropPlugin plugin, UUID uuid, String displayName, CommandAction commands, String typeId, String modelId) {
+    public ConfigurableDrop(SupplyDropPlugin plugin, UUID uuid,  String displayName, CommandAction commands, String typeId, String modelId) {
         this.plugin = plugin;
         this.uuid = uuid;
         this.typeId = typeId;
@@ -54,8 +54,7 @@ public class ConfigurableDrop implements Drop {
         return uuid;
     }
 
-    public static ConfigurableDrop create(SupplyDropPlugin plugin, ConfigurationSection section) {
-        UUID uuid = UUID.fromString(section.getString("uuid", UUID.randomUUID().toString()));
+    public static ConfigurableDrop create(SupplyDropPlugin plugin, UUID uuid, ConfigurationSection section) {
         String typeId = section.getName();
         String displayName = section.getString("stand-name");
         String modelId = section.getString("model");
@@ -64,6 +63,10 @@ public class ConfigurableDrop implements Drop {
         DropCommandRegistry commandRegistry = plugin.getCommandRegistry();
         CommandAction commandAction = CommandAction.create(commandRegistry.getRandom(section.getName(), range));
         return new ConfigurableDrop(plugin, uuid, displayName, commandAction, typeId, modelId);
+    }
+
+    public static ConfigurableDrop create(SupplyDropPlugin plugin, ConfigurationSection section) {
+        return create(plugin, UUID.randomUUID(), section);
     }
 
     private ArmorStand setupDropAmorStand(Location location) {

@@ -52,6 +52,7 @@ public final class SupplyDropPlugin extends JavaPlugin {
 
         this.locationRegistry = new DropLocationRegistry();
         new LocationConfigHandler(this).load();
+
         this.dropCache = new DropCache();
         this.dropQueue = new LinkedList<>();
         this.dropSupplier = new DropSupplier(this);

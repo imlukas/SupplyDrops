@@ -11,6 +11,8 @@ public interface Drop {
 
     UUID getUUID();
 
+    String getTypeId();
+
     boolean drop();
 
     void destroy();
