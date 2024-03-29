@@ -7,11 +7,12 @@ import dev.imlukas.supplydropplugin.SupplyDropPlugin;
 import dev.imlukas.supplydropplugin.drop.Drop;
 import dev.imlukas.supplydropplugin.drop.commands.CommandAction;
 import dev.imlukas.supplydropplugin.drop.commands.registry.DropCommandRegistry;
-import dev.imlukas.supplydropplugin.drop.task.drop.DropRepositionTask;
-import dev.imlukas.supplydropplugin.location.DropLocation;
+import dev.imlukas.supplydropplugin.drop.locations.DropLocation;
+import dev.imlukas.supplydropplugin.drop.locations.tracker.DropLocationTracker;
+import dev.imlukas.supplydropplugin.drop.messager.DropMessager;
+import dev.imlukas.supplydropplugin.drop.task.drop.DropFallTask;
 import dev.imlukas.supplydropplugin.util.collection.range.IntegerRange;
 import dev.imlukas.supplydropplugin.util.collection.range.Range;
-import dev.imlukas.supplydropplugin.util.text.TextUtils;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,8 +29,10 @@ import java.util.UUID;
 @Getter
 @Setter
 public class ConfigurableDrop implements Drop {
-
+    @Getter(AccessLevel.NONE)
     private final SupplyDropPlugin plugin;
+    @Getter(AccessLevel.NONE)
+    private final DropLocationTracker locationTracker;
     @Getter(AccessLevel.NONE)
     private final UUID uuid;
     private final String typeId;
@@ -38,10 +41,10 @@ public class ConfigurableDrop implements Drop {
     private final String modelId;
 
     private UUID entityId;
-    private Runnable onCollect;
 
-    public ConfigurableDrop(SupplyDropPlugin plugin, UUID uuid,  String displayName, CommandAction commands, String typeId, String modelId) {
+    public ConfigurableDrop(SupplyDropPlugin plugin, UUID uuid, String typeId, String displayName, String modelId, CommandAction commands) {
         this.plugin = plugin;
+        this.locationTracker = plugin.getLocationTracker();
         this.uuid = uuid;
         this.typeId = typeId;
         this.displayName = displayName;
@@ -54,6 +57,10 @@ public class ConfigurableDrop implements Drop {
         return uuid;
     }
 
+    public static ConfigurableDrop create(SupplyDropPlugin plugin, UUID uuid, String typeId, String displayName, String modelId, CommandAction commands) {
+        return new ConfigurableDrop(plugin, uuid, typeId, displayName, modelId, commands);
+    }
+
     public static ConfigurableDrop create(SupplyDropPlugin plugin, UUID uuid, ConfigurationSection section) {
         String typeId = section.getName();
         String displayName = section.getString("stand-name");
@@ -62,7 +69,7 @@ public class ConfigurableDrop implements Drop {
         IntegerRange range = Range.ofInteger(section.getInt("command-range.min"), section.getInt("command-range.max"));
         DropCommandRegistry commandRegistry = plugin.getCommandRegistry();
         CommandAction commandAction = CommandAction.create(commandRegistry.getRandom(section.getName(), range));
-        return new ConfigurableDrop(plugin, uuid, displayName, commandAction, typeId, modelId);
+        return new ConfigurableDrop(plugin, uuid, typeId, displayName, modelId, commandAction);
     }
 
     public static ConfigurableDrop create(SupplyDropPlugin plugin, ConfigurationSection section) {
@@ -74,11 +81,27 @@ public class ConfigurableDrop implements Drop {
         ArmorStand stand = world.spawn(location, ArmorStand.class);
         stand.setInvulnerable(true);
         stand.setVisible(false);
-        stand.customName(TextUtils.color(displayName));
         stand.setCustomNameVisible(true);
-        new DropRepositionTask(plugin, stand);
-
+        new DropFallTask(plugin, displayName, stand);
         return stand;
+    }
+
+    @Override
+    public boolean dropAt(DropLocation dropLocation) {
+        Location location = dropLocation.asBukkitLocation();
+        locationTracker.track(this, dropLocation);
+
+        ArmorStand stand = setupDropAmorStand(location);
+        ModeledEntity modeledEntity = ModelEngineAPI.createModeledEntity(stand);
+        modeledEntity.getBase().setRenderRadius(1000);
+        ActiveModel model = ModelEngineAPI.createActiveModel(modelId);
+        modeledEntity.addModel(model, true);
+
+        setEntityId(stand.getUniqueId());
+        dropLocation.setOccupied(true);
+
+        DropMessager.announceDropping(plugin, this, dropLocation);
+        return true;
     }
 
     @Override
@@ -90,17 +113,7 @@ public class ConfigurableDrop implements Drop {
             return false;
         }
 
-        Location location = dropLocation.asBukkitLocation();
-        ArmorStand stand = setupDropAmorStand(location);
-        ModeledEntity modeledEntity = ModelEngineAPI.createModeledEntity(stand);
-        modeledEntity.getBase().setRenderRadius(1000);
-        ActiveModel model = ModelEngineAPI.createActiveModel(modelId);
-        modeledEntity.addModel(model, true);
-
-        setEntityId(stand.getUniqueId());
-        dropLocation.setOccupied(true);
-        this.onCollect = () -> dropLocation.setOccupied(false);
-        return true;
+        return dropAt(dropLocation);
     }
 
     @Override
@@ -113,15 +126,14 @@ public class ConfigurableDrop implements Drop {
 
         entity.remove();
         ModelEngineAPI.removeModeledEntity(entity);
+        locationTracker.untrack(this);
     }
 
     @Override
     public void collect(Player player) {
+        DropMessager.sendCollectNotifications(plugin, player, this);
+        DropMessager.announceCollected(plugin, player, this, locationTracker.get(this));
 
-        plugin.getMessages().send(player, "drop.collected");
-        plugin.getSounds().playSound(player, "drop.collected");
-
-        onCollect.run();
         commands.execute(player);
     }
 }

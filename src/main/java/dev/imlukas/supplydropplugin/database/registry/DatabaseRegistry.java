@@ -1,10 +1,9 @@
 package dev.imlukas.supplydropplugin.database.registry;
 
-import eu.merakistudios.fishingtraps.FishingTrapsPlugin;
+import dev.imlukas.supplydropplugin.SupplyDropPlugin;
 import dev.imlukas.supplydropplugin.database.Database;
-import dev.imlukas.supplydropplugin.database.fishing.biomes.unlocked.SQLiteUnlockedBiomesStorage;
-import dev.imlukas.supplydropplugin.database.fishing.biomes.active.SQLiteActiveBiomesStorage;
-import dev.imlukas.supplydropplugin.database.fishing.traps.SQLiteTrapStorage;
+import dev.imlukas.supplydropplugin.database.drops.cache.CachedSQLiteDropsStorage;
+import dev.imlukas.supplydropplugin.database.drops.queue.QueuedSQLiteDropsStorage;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashMap;
@@ -13,23 +12,18 @@ import java.util.concurrent.CompletableFuture;
 
 public class DatabaseRegistry {
 
-    private final FishingTrapsPlugin plugin;
+    private final SupplyDropPlugin plugin;
     private final Map<String, RegisteredDatabase> databases = new HashMap<>();
 
-    public DatabaseRegistry(FishingTrapsPlugin plugin) {
+    public DatabaseRegistry(SupplyDropPlugin plugin) {
         this.plugin = plugin;
     }
 
     public CompletableFuture<Void> registerDefaults() {
         return CompletableFuture.allOf(
-                register("biomes-caught", DatabaseProvider.of(new dev.imlukas.supplydropplugin.database.fishing.biomes.caught.SQLiteBiomesStorage())),
-                register("biomes-active", DatabaseProvider.of(new SQLiteActiveBiomesStorage(plugin))),
-                register("biomes-unlocked", DatabaseProvider.of(new SQLiteUnlockedBiomesStorage())),
-                register("fishing-traps", DatabaseProvider.of(new SQLiteTrapStorage(plugin)))
-        ).exceptionally(throwable -> {
-            throwable.printStackTrace();
-            return null;
-        });
+                register("queued-drops", DatabaseProvider.of(new QueuedSQLiteDropsStorage(plugin))),
+                register("cached-drops", DatabaseProvider.of(new CachedSQLiteDropsStorage(plugin)))
+        );
 
     }
 
@@ -64,8 +58,6 @@ public class DatabaseRegistry {
             return CompletableFuture.completedFuture(null);
         }
 
-        System.out.println(plugin.getConfig().getKeys(true));
-
         String databaseType = plugin.getConfig().getString("databases." + database.getName() + ".type");
         ConfigurationSection section = plugin.getConfig().getConfigurationSection("databases." + database.getName() + ".credentials");
 
@@ -77,6 +69,7 @@ public class DatabaseRegistry {
         Database toEnable = database.getProvider().getDatabase(databaseType);
         return toEnable.enable(plugin, section).thenAccept(value -> {
             if (value) {
+                System.out.println("Enabled database " + database.getName());
                 database.setEnabled(true);
                 database.setDatabase(toEnable);
             } else {

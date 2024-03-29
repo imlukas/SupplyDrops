@@ -26,6 +26,10 @@ public class Time {
         return new Time((int) (currentEpoch - epoch), TimeUnit.SECONDS);
     }
 
+    public static Time fromTicks(long ticks) {
+        return new Time(ticks * 50, TimeUnit.MILLISECONDS);
+    }
+
     /**
      * Converts the time to the specified unit.
      *

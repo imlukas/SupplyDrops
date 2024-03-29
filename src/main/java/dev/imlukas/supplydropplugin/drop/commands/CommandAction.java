@@ -18,6 +18,15 @@ public class CommandAction {
         this.commands.addAll(commands);
     }
 
+
+    public static CommandAction deserialize(String serializedCommands) {
+        return new CommandAction(List.of(serializedCommands.split(":")));
+    }
+
+    public String serialize() {
+        return String.join(":", commands);
+    }
+
     public static CommandAction create(List<String> commands) {
         return new CommandAction(commands);
     }

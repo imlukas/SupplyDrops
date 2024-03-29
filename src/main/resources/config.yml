@@ -1,0 +1,9 @@
+databases:
+  cached-drops:
+    type: sqlite
+    credentials:
+      database: test
+  queued-drops:
+    type: sqlite
+    credentials:
+      database: test

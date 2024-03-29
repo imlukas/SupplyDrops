@@ -3,9 +3,8 @@ package dev.imlukas.supplydropplugin.listener;
 import com.ticxo.modelengine.api.entity.BaseEntity;
 import com.ticxo.modelengine.api.events.BaseEntityInteractEvent;
 import dev.imlukas.supplydropplugin.SupplyDropPlugin;
-import dev.imlukas.supplydropplugin.drop.cache.DropCache;
+import dev.imlukas.supplydropplugin.drop.tracker.DropTracker;
 import dev.imlukas.supplydropplugin.drop.Drop;
-import dev.imlukas.supplydropplugin.drop.locations.registry.DropLocationRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -18,13 +17,11 @@ import java.util.UUID;
 
 public class SupplyDropInteractListener implements Listener {
 
-    private final DropCache cache;
-    private final DropLocationRegistry locationRegistry;
+    private final DropTracker dropTracker;
     private final Queue<Drop> queue;
 
     public SupplyDropInteractListener(SupplyDropPlugin plugin) {
-        this.cache = plugin.getDropCache();
-        this.locationRegistry = plugin.getLocationRegistry();
+        this.dropTracker = plugin.getDropTracker();
         this.queue = plugin.getDropQueue();
     }
 
@@ -49,15 +46,16 @@ public class SupplyDropInteractListener implements Listener {
             return;
         }
 
-        Drop drop = cache.getByEntityId(entityId);
+        Drop drop = dropTracker.getByEntityId(entityId);
 
         if (drop == null) {
             return;
         }
 
-        drop.destroy();
         drop.collect(player);
-        cache.remove(drop.getUUID());
+        drop.destroy();
+        dropTracker.remove(drop.getUUID());
+
         // Check if there is a drop in the queue that can be dropped after this has been collected
         Drop nextDrop = queue.peek();
 
@@ -71,7 +69,7 @@ public class SupplyDropInteractListener implements Listener {
             return;
         }
 
-        cache.add(nextDrop);
+        dropTracker.add(nextDrop);
         queue.poll();
     }
 }

@@ -10,6 +10,7 @@ import dev.imlukas.supplydropplugin.util.text.Placeholder;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -28,6 +29,11 @@ public class Messages extends YMLBase {
      */
     public Messages(JavaPlugin plugin) {
         super(plugin, new File(plugin.getDataFolder(), "messages.yml"), true);
+    }
+
+    @SafeVarargs
+    public final void announce(String path, Placeholder<Audience>... placeholders) {
+        Bukkit.getOnlinePlayers().forEach(player -> send(player, path, placeholders));
     }
 
     public final void send(CommandAudience audience, String path) {
@@ -62,7 +68,7 @@ public class Messages extends YMLBase {
 
     @SafeVarargs
     public final void send(Audience sender, String path, ComponentPlaceholder<Audience>... placeholders) {
-        Message message = getMessage(path);
+        Message message = getMessage(path, placeholders);
 
         if (message == null) {
             return;

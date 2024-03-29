@@ -1,33 +1,59 @@
 package dev.imlukas.supplydropplugin.drop.task.drop;
 
 import dev.imlukas.supplydropplugin.SupplyDropPlugin;
-import dev.imlukas.supplydropplugin.drop.cache.DropCache;
+import dev.imlukas.supplydropplugin.drop.tracker.DropTracker;
 import dev.imlukas.supplydropplugin.drop.Drop;
 import dev.imlukas.supplydropplugin.drop.configuration.DropSupplier;
 import dev.imlukas.supplydropplugin.util.file.PluginSettings;
+import dev.imlukas.supplydropplugin.util.file.messages.Messages;
+import dev.imlukas.supplydropplugin.util.text.Placeholder;
+import dev.imlukas.supplydropplugin.util.time.Time;
+import dev.imlukas.supplydropplugin.util.time.TimeUtil;
+import net.kyori.adventure.audience.Audience;
 import org.bukkit.Bukkit;
 
 import java.util.Queue;
 
 public class DropTask implements Runnable {
 
+    private final Messages messages;
     private final PluginSettings settings;
-    private final DropCache cache;
+    private final DropTracker dropTracker;
     private final DropSupplier dropSupplier;
-    private final Queue<Drop> queue;
+    private long currentTicks = 0;
 
     public DropTask(SupplyDropPlugin plugin) {
+        this.messages = plugin.getMessages();
         this.settings = plugin.getSettings();
-        this.cache = plugin.getDropCache();
+        this.dropTracker = plugin.getDropTracker();
         this.dropSupplier = plugin.getDropSupplier();
-        this.queue = plugin.getDropQueue();
 
-        System.out.println("Dropping a new drop every " + (settings.getTimePerDrop() / 20) / 60 + "minutes");
-        Bukkit.getScheduler().runTaskTimer(plugin, this, settings.getTimePerDrop(), settings.getTimePerDrop());
+        Bukkit.getScheduler().runTaskTimer(plugin, this, 20, 20);
+    }
+
+    public long getTicksRemaining() {
+        return settings.getTimePerDrop() - currentTicks;
     }
 
     @Override
     public void run() {
+        currentTicks += 20;
+
+        if (settings.getNotificationTicks().contains(currentTicks)) {
+            long seconds = getTicksRemaining() / 20;
+            Placeholder<Audience> hours = new Placeholder<>("hours_remaining", String.valueOf(seconds / 3600));
+            Placeholder<Audience> minutes = new Placeholder<>("minutes_remaining", String.valueOf((seconds % 3600) / 60));
+            Placeholder<Audience> secondsPlaceholder = new Placeholder<>("seconds_remaining", String.valueOf(seconds % 60));
+
+            messages.announce("drop.notification", hours, minutes, secondsPlaceholder);
+        }
+
+        if (currentTicks < settings.getTimePerDrop()) {
+            return;
+        }
+
+
+        currentTicks = 0;
         Drop drop = dropSupplier.supplyDrop(settings.getDefaultDropId());
 
         if (drop == null) {
@@ -35,16 +61,12 @@ public class DropTask implements Runnable {
             return;
         }
 
-        drop(drop);
-    }
-
-    public void drop(Drop drop) {
         boolean dropped = drop.drop();
 
         if (!dropped) {
             return;
         }
 
-        cache.add(drop);
+        dropTracker.add(drop);
     }
 }

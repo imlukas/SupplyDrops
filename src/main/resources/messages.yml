@@ -5,3 +5,6 @@ messages:
     incorrect-audience: "<red>You cannot run this command."
   drop:
     collected: "<green>You have collected a drop!"
+    collected-announce: "<green>%player% has collected a drop at (x: %location-x%, y: %location-y%, z: %location-z%)!"
+    dropping: "<green>A drop is being dropped at (x: %location-x%, y: %location-y%, z: %location-z%)!"
+    notification: "<green>A drop will be dropped in <white>%hours_remaining%h%minutes_remaining%m%seconds_remaining%s<green>!"

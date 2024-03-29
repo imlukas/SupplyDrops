@@ -15,12 +15,12 @@ public class QueuedSQLiteDropsStorage extends SQLiteDatabase implements QueuedDr
 
     private static final String TABLE_NAME = "queued_drops";
     private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (drop_id VARCHAR(36) NOT NULL PRIMARY KEY, " +
-            "type_id VARCHAR(36) NOT NULL, " +
+            "type_id VARCHAR(36) NOT NULL" +
             ");";
 
     private static final String FETCH_QUEUE = "SELECT * FROM " + TABLE_NAME + ";";
     private static final String STORE_QUEUE = "REPLACE INTO " + TABLE_NAME + " " + "(drop_id, type_id) " + "VALUES (?, ?);";
-    private static final String DELETE_QUEUED = "DELETE FROM " + TABLE_NAME + " WHERE drop_id = ?;";
+    private static final String DELETE_QUEUED = "DELETE FROM " + TABLE_NAME + ";";
 
     private final DropSupplier dropSupplier;
 
@@ -35,8 +35,7 @@ public class QueuedSQLiteDropsStorage extends SQLiteDatabase implements QueuedDr
 
     @Override
     protected void createTables() {
-        runUpdateAsync(CREATE_TABLE, statement -> {
-        });
+        runUpdateAsync(CREATE_TABLE);
     }
 
     @Override
@@ -56,13 +55,13 @@ public class QueuedSQLiteDropsStorage extends SQLiteDatabase implements QueuedDr
 
     @Override
     public CompletableFuture<Void> storeQueue(Queue<Drop> queue) {
-        for (Drop drop : queue) {
-            runUpdate(STORE_QUEUE,
-                    StringStatementObject.create(drop.getUUID().toString()),
-                    StringStatementObject.create(drop.getTypeId()));
-        }
-
-        return null;
+        return runUpdateAsync(DELETE_QUEUED).thenRun(() -> {
+            queue.forEach(drop -> {
+                runUpdateAsync(STORE_QUEUE,
+                        StringStatementObject.create(drop.getUUID().toString()),
+                        StringStatementObject.create(drop.getTypeId()));
+            });
+        });
     }
 
     @Override

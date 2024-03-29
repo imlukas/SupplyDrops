@@ -2,7 +2,7 @@ package dev.imlukas.supplydropplugin.drop.locations.config;
 
 import dev.imlukas.supplydropplugin.SupplyDropPlugin;
 import dev.imlukas.supplydropplugin.drop.locations.registry.DropLocationRegistry;
-import dev.imlukas.supplydropplugin.location.DropLocation;
+import dev.imlukas.supplydropplugin.drop.locations.DropLocation;
 import dev.imlukas.supplydropplugin.util.file.YMLBase;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -25,11 +25,11 @@ public class LocationConfigHandler extends YMLBase {
             }
 
             System.out.println("Loading locations for " + dropId);
-            loadCommands(dropSection.getConfigurationSection("locations"), dropId);
+            loadLocations(dropSection.getConfigurationSection("locations"), dropId);
         }
     }
 
-    public void loadCommands(ConfigurationSection section, String id) {
+    public void loadLocations(ConfigurationSection section, String id) {
         for (String key : section.getKeys(false)) {
             ConfigurationSection locationSection = section.getConfigurationSection(key);
 

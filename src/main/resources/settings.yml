@@ -6,7 +6,20 @@ ranges:
     min: 1
     max: 5
 
+
+notification-times: [5 minutes, 10 minutes, 15 minutes, 20 minutes, 25 minutes, 30 minutes]
+
 drop-velocity-multiplier: -0.2 # Tweak this to liking
 default-drop: "supply-drop"
 
 time-per-supply-drop: 30 minutes
+player-location-height: 150
+
+helix:
+  particle: SPELL_WITCH
+  initial-height: -0.25
+  max-height: 3.5
+  radius: 0.875
+  angle: 1.75
+  increment: 0.075
+  delay: 1

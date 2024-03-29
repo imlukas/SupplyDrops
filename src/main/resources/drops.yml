@@ -1,6 +1,6 @@
 
 supply-drop:
-  stand-name: "<light_purple>Supply Drop"
+  stand-name: "<light_purple>Supply Drop <gray>(%distance%m)"
   model: airdrop
   command-range:
     min: 1

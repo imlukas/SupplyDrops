@@ -17,7 +17,7 @@ public class TimeParser {
         String[] split = input.split(" ");
 
         if (split.length != 2) {
-            throw new IllegalArgumentException("Invalid time format");
+            return null;
         }
 
         int time = Integer.parseInt(split[0]);

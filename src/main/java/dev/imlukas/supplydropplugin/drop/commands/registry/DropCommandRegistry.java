@@ -59,4 +59,8 @@ public class DropCommandRegistry {
     public List<ParsedCommand> getCommands(String dropId) {
         return commands.get(dropId);
     }
+
+    public void clearCommands() {
+        commands.clear();
+    }
 }

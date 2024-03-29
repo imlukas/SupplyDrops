@@ -1,4 +1,4 @@
-package dev.imlukas.supplydropplugin.location;
+package dev.imlukas.supplydropplugin.drop.locations;
 
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -37,7 +37,6 @@ public class DropLocation {
         return Bukkit.getWorld(worldId);
     }
 
-
     public static DropLocation fromLocation(Location location) {
         return new DropLocation(location);
     }
@@ -57,7 +56,19 @@ public class DropLocation {
         return fromLocation(new Location(world, x, y, z, yaw, pitch));
     }
 
-    public static DropLocation fromString(String location) {
+
+    public boolean equals(DropLocation location) {
+        return location.getWorldId().equals(getWorldId())
+                && location.getX() == getX()
+                && location.getY() == getY()
+                && location.getZ() == getZ();
+    }
+
+    public Location asBukkitLocation() {
+        return new Location(Bukkit.getWorld(worldId), x, y, z, yaw, pitch);
+    }
+
+    public static DropLocation deserialize(String location) {
         if (location == null) {
             return null;
         }
@@ -71,18 +82,6 @@ public class DropLocation {
         }
 
         return fromLocation(new Location(world, Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]), Float.parseFloat(split[4]), Float.parseFloat(split[5])));
-    }
-
-
-    public boolean equals(DropLocation location) {
-        return location.getWorldId().equals(getWorldId())
-                && location.getX() == getX()
-                && location.getY() == getY()
-                && location.getZ() == getZ();
-    }
-
-    public Location asBukkitLocation() {
-        return new Location(Bukkit.getWorld(worldId), x, y, z, yaw, pitch);
     }
 
     public String serialize() {
