@@ -7,15 +7,18 @@ import dev.imlukas.supplydropplugin.drop.Drop;
 import dev.imlukas.supplydropplugin.drop.commands.CommandAction;
 import dev.imlukas.supplydropplugin.drop.configuration.DropSupplier;
 import dev.imlukas.supplydropplugin.drop.impl.ConfigurableDrop;
-import dev.imlukas.supplydropplugin.drop.locations.registry.DropLocationRegistry;
 import dev.imlukas.supplydropplugin.drop.locations.DropLocation;
+import dev.imlukas.supplydropplugin.drop.locations.registry.DropLocationRegistry;
 import dev.imlukas.supplydropplugin.drop.locations.tracker.DropLocationTracker;
 import org.bukkit.configuration.ConfigurationSection;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-public class CachedSQLiteDropsStorage extends SQLiteDatabase implements CachedDropsStorage {
+public class CachedMySQLDropsStorage extends SQLiteDatabase implements CachedDropsStorage {
 
 
     private static final String TABLE_NAME = "cached_drops";
@@ -27,7 +30,7 @@ public class CachedSQLiteDropsStorage extends SQLiteDatabase implements CachedDr
             ");";
 
     private static final String FETCH_CACHED = "SELECT * FROM " + TABLE_NAME + ";";
-    private static final String STORE_CACHED = "REPLACE INTO " + TABLE_NAME + " " + "(drop_id, type_id, entity_id, commands, location) " + "VALUES (?, ?, ?, ?, ?);";
+    private static final String STORE_CACHED = "INSERT INTO " + TABLE_NAME + " " + "(drop_id, type_id, entity_id, commands, location) " + "VALUES (?, ?, ?, ?, ?)";
     private static final String DELETE_CACHED = "DELETE FROM " + TABLE_NAME;
 
     private final SupplyDropPlugin plugin;
@@ -35,7 +38,7 @@ public class CachedSQLiteDropsStorage extends SQLiteDatabase implements CachedDr
     private final DropLocationTracker locationTracker;
     private final DropSupplier dropSupplier;
 
-    public CachedSQLiteDropsStorage(SupplyDropPlugin plugin) {
+    public CachedMySQLDropsStorage(SupplyDropPlugin plugin) {
         this.plugin = plugin;
         this.locationRegistry = plugin.getLocationRegistry();
         this.locationTracker = plugin.getLocationTracker();

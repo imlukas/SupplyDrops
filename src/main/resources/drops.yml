@@ -1,5 +1,6 @@
 
 supply-drop:
+  particle: "circle"
   stand-name: "<light_purple>Supply Drop <gray>(%distance%m)"
   model: airdrop
   command-range:
@@ -25,6 +26,8 @@ supply-drop:
       chance: 0.3
 
 gg-drop:
+  particle: "rainbow_circle"
+  stand-name: "<light_purple>Supply Drop <gray>(%distance%m)"
   model: gg_airdrop
   command-range:
     min: 1

@@ -13,9 +13,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class DropFallTask {
 
-    public DropFallTask(SupplyDropPlugin plugin, String displayName, ArmorStand armorStand) {
+    public DropFallTask(SupplyDropPlugin plugin, String displayName, String particleType, ArmorStand armorStand) {
 
-        DropParticleTask particleTask = new DropParticleTask(plugin, armorStand);
+        DropParticleTask particleTask = new DropParticleTask(plugin, particleType, armorStand);
 
         Location location = armorStand.getLocation();
         World world = location.getWorld();
@@ -29,7 +29,10 @@ public class DropFallTask {
                 return;
             }
 
-            armorStand.customName(TextUtils.color(displayName.replace("%distance%", String.valueOf(distanceToGround))));
+            if (!displayName.isEmpty()) {
+                armorStand.customName(TextUtils.color(displayName.replace("%distance%", String.valueOf(distanceToGround))));
+            }
+
             armorStand.setVelocity(new Vector(0, plugin.getSettings().getDropVelocity(), 0));
 
             if (distanceToGround == 0) {

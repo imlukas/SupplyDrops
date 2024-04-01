@@ -15,6 +15,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * This class is responsible for handling the loading and saving of the messages.yml file. It also provides a method for sending messages to players.
@@ -30,7 +31,9 @@ public class Messages extends YMLBase {
     public Messages(JavaPlugin plugin) {
         super(plugin, new File(plugin.getDataFolder(), "messages.yml"), true);
     }
-
+    public final void announce(String path, List<Placeholder<Audience>> placeholders) {
+        Bukkit.getOnlinePlayers().forEach(player -> send(player, path, placeholders.toArray(new Placeholder[0])));
+    }
     @SafeVarargs
     public final void announce(String path, Placeholder<Audience>... placeholders) {
         Bukkit.getOnlinePlayers().forEach(player -> send(player, path, placeholders));

@@ -1,7 +1,11 @@
 databases:
   cached-drops:
-    type: sqlite
+    type: mysql
     credentials:
+      host: localhost
+      port: 3306
+      username: root
+      password: password
       database: test
   queued-drops:
     type: sqlite

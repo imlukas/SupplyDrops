@@ -3,6 +3,7 @@ package dev.imlukas.supplydropplugin.database.registry;
 import dev.imlukas.supplydropplugin.SupplyDropPlugin;
 import dev.imlukas.supplydropplugin.database.Database;
 import dev.imlukas.supplydropplugin.database.drops.cache.CachedSQLiteDropsStorage;
+import dev.imlukas.supplydropplugin.database.drops.queue.QueuedMySQLDropsStorage;
 import dev.imlukas.supplydropplugin.database.drops.queue.QueuedSQLiteDropsStorage;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -21,8 +22,8 @@ public class DatabaseRegistry {
 
     public CompletableFuture<Void> registerDefaults() {
         return CompletableFuture.allOf(
-                register("queued-drops", DatabaseProvider.of(new QueuedSQLiteDropsStorage(plugin))),
-                register("cached-drops", DatabaseProvider.of(new CachedSQLiteDropsStorage(plugin)))
+                register("queued-drops", DatabaseProvider.of(new QueuedSQLiteDropsStorage(plugin), new QueuedMySQLDropsStorage(plugin))),
+                register("cached-drops", DatabaseProvider.of(new CachedSQLiteDropsStorage(plugin), new CachedSQLiteDropsStorage(plugin)))
         );
 
     }

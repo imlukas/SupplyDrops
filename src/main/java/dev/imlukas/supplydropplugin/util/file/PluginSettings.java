@@ -1,10 +1,9 @@
 package dev.imlukas.supplydropplugin.util.file;
 
-import dev.imlukas.supplydropplugin.util.collection.range.IntegerRange;
-import dev.imlukas.supplydropplugin.util.collection.range.Range;
 import dev.imlukas.supplydropplugin.util.time.Time;
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -23,13 +22,9 @@ public class PluginSettings extends YMLBase{
 
     private List<Long> notificationTicks = new ArrayList<>();
 
-    private Particle helixParticle;
-    private double helixInitialHeight;
-    private double helixMaxHeight;
-    private double helixRadius;
-    private double helixAngle;
-    private double helixIncrement;
-    private int helixDelay;
+    private Particle circleParticle;
+    private double circleRadius;
+    private int circleDelay;
 
     private final FileConfiguration config;
 
@@ -56,13 +51,8 @@ public class PluginSettings extends YMLBase{
             notificationTicks.add(time.asTicks());
         }
 
-        helixParticle = Particle.valueOf(config.getString("helix.particle", "SPELL_WITCH"));
-        helixInitialHeight = config.getDouble("helix.initial-height", -0.25);
-        helixMaxHeight = config.getDouble("helix.max-height", 3.5);
-        helixRadius = config.getDouble("helix.radius", 0.875);
-        helixAngle = config.getDouble("helix.angle", 1.75);
-        helixIncrement = config.getDouble("helix.increment", 0.075);
-        helixDelay = config.getInt("helix.delay", 1);
+        circleRadius = config.getDouble("circle.radius", 0.875);
+        circleDelay = config.getInt("circle.delay", 1);
     }
 
     public void reload() {

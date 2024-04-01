@@ -15,11 +15,7 @@ default-drop: "supply-drop"
 time-per-supply-drop: 30 minutes
 player-location-height: 150
 
-helix:
-  particle: SPELL_WITCH
-  initial-height: -0.25
-  max-height: 3.5
+circle:
+  particle: "SPELL_WITCH"
   radius: 0.875
-  angle: 1.75
-  increment: 0.075
   delay: 1

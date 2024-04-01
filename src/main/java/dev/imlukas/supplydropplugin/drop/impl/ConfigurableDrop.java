@@ -37,17 +37,19 @@ public class ConfigurableDrop implements Drop {
     private final UUID uuid;
     private final String typeId;
     private final String displayName;
+    private final String particleType;
     private final CommandAction commands;
     private final String modelId;
 
     private UUID entityId;
 
-    public ConfigurableDrop(SupplyDropPlugin plugin, UUID uuid, String typeId, String displayName, String modelId, CommandAction commands) {
+    public ConfigurableDrop(SupplyDropPlugin plugin, UUID uuid, String typeId, String displayName, String modelId, String particleType, CommandAction commands) {
         this.plugin = plugin;
         this.locationTracker = plugin.getLocationTracker();
         this.uuid = uuid;
         this.typeId = typeId;
         this.displayName = displayName;
+        this.particleType = particleType;
         this.commands = commands;
         this.modelId = modelId;
     }
@@ -57,19 +59,20 @@ public class ConfigurableDrop implements Drop {
         return uuid;
     }
 
-    public static ConfigurableDrop create(SupplyDropPlugin plugin, UUID uuid, String typeId, String displayName, String modelId, CommandAction commands) {
-        return new ConfigurableDrop(plugin, uuid, typeId, displayName, modelId, commands);
+    public static ConfigurableDrop create(SupplyDropPlugin plugin, UUID uuid, String typeId, String displayName, String modelId, String particleType, CommandAction commands) {
+        return new ConfigurableDrop(plugin, uuid, typeId, displayName, modelId, particleType, commands);
     }
 
     public static ConfigurableDrop create(SupplyDropPlugin plugin, UUID uuid, ConfigurationSection section) {
         String typeId = section.getName();
-        String displayName = section.getString("stand-name");
+        String displayName = section.getString("stand-name", "");
         String modelId = section.getString("model");
+        String particleType = section.getString("particle", "circle");
 
         IntegerRange range = Range.ofInteger(section.getInt("command-range.min"), section.getInt("command-range.max"));
         DropCommandRegistry commandRegistry = plugin.getCommandRegistry();
         CommandAction commandAction = CommandAction.create(commandRegistry.getRandom(section.getName(), range));
-        return new ConfigurableDrop(plugin, uuid, typeId, displayName, modelId, commandAction);
+        return new ConfigurableDrop(plugin, uuid, typeId, displayName, modelId, particleType, commandAction);
     }
 
     public static ConfigurableDrop create(SupplyDropPlugin plugin, ConfigurationSection section) {
@@ -82,7 +85,7 @@ public class ConfigurableDrop implements Drop {
         stand.setInvulnerable(true);
         stand.setVisible(false);
         stand.setCustomNameVisible(true);
-        new DropFallTask(plugin, displayName, stand);
+        new DropFallTask(plugin, displayName, particleType, stand);
         return stand;
     }
 
